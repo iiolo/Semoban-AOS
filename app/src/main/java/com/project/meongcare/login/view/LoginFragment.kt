@@ -72,46 +72,59 @@ class LoginFragment : Fragment() {
 
     private fun loginResponseProcess() {
         loginViewModel.loginResponse.observe(viewLifecycleOwner) { loginResponse ->
-            if (loginResponse != null) {
-                when (loginResponse.code()) {
-                    200 -> {
-                        // 로그인 성공
-                        if (loginResponse.body() != null) {
-                            Log.e("isFirstLogin", loginResponse.body()?.isFirstLogin.toString())
-                            userViewModel.setAccessToken(loginResponse.body()?.accessToken)
-                            userViewModel.setRefreshToken(loginResponse.body()?.refreshToken)
-                            userViewModel.setIsFirstLogin(loginResponse.body()?.isFirstLogin)
-                            when (loginResponse.body()?.isFirstLogin) {
-                                true -> {
-                                    val bundle = Bundle()
-                                    bundle.putBoolean("isFirstRegister", true)
-                                    findNavController().navigate(R.id.action_loginFragment_to_dogAddOnBoardingFragment, bundle)
-                                }
-                                false -> findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
-                                else -> {}
+            if (loginResponse == null) {
+                Log.e("LoginFragment", "서버 응답 없음 (네트워크 오류)")
+                CustomSnackBar.make(
+                    requireView(),
+                    R.drawable.snackbar_error_16dp,
+                    getString(R.string.snack_bar_failure),
+                ).show()
+                return@observe
+            }
+            when (loginResponse.code()) {
+                200 -> {
+                    if (loginResponse.body() != null) {
+                        Log.e("isFirstLogin", loginResponse.body()?.isFirstLogin.toString())
+                        userViewModel.setAccessToken(loginResponse.body()?.accessToken)
+                        userViewModel.setRefreshToken(loginResponse.body()?.refreshToken)
+                        userViewModel.setIsFirstLogin(loginResponse.body()?.isFirstLogin)
+                        when (loginResponse.body()?.isFirstLogin) {
+                            true -> {
+                                val bundle = Bundle()
+                                bundle.putBoolean("isFirstRegister", true)
+                                findNavController().navigate(R.id.action_loginFragment_to_dogAddOnBoardingFragment, bundle)
+                            }
+                            false -> findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                            else -> {
+                                Log.e("LoginFragment", "isFirstLogin이 null")
+                                CustomSnackBar.make(
+                                    requireView(),
+                                    R.drawable.snackbar_error_16dp,
+                                    getString(R.string.snack_bar_failure),
+                                ).show()
                             }
                         }
                     }
-                    400 -> {
-                        // 로그인 실패 : 탈퇴 유저
-                        CustomSnackBar.make(
-                            requireView(),
-                            R.drawable.snackbar_error_16dp,
-                            getString(R.string.snack_bar_login_failure_deleted),
-                        )
-                        when (provider) {
-                            "kakao" -> deleteKakaoAccount()
-                            "naver" -> deleteNaverAccount()
-                            "google" -> deleteGoogleAccount()
-                        }
+                }
+                400 -> {
+                    CustomSnackBar.make(
+                        requireView(),
+                        R.drawable.snackbar_error_16dp,
+                        getString(R.string.snack_bar_login_failure_deleted),
+                    ).show()
+                    when (provider) {
+                        "kakao" -> deleteKakaoAccount()
+                        "naver" -> deleteNaverAccount()
+                        "google" -> deleteGoogleAccount()
                     }
-                    else -> {
-                        CustomSnackBar.make(
-                            requireView(),
-                            R.drawable.snackbar_error_16dp,
-                            getString(R.string.snack_bar_login_failure),
-                        )
-                    }
+                }
+                else -> {
+                    Log.e("LoginFragment", "로그인 실패: ${loginResponse.code()}")
+                    CustomSnackBar.make(
+                        requireView(),
+                        R.drawable.snackbar_error_16dp,
+                        getString(R.string.snack_bar_login_failure),
+                    ).show()
                 }
             }
         }

@@ -22,7 +22,7 @@ class LoginRepositoryImpl
                     return response
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("LoginRepository", "네트워크 예외: ${e::class.simpleName} - ${e.message}")
                 return null
             }
         }
