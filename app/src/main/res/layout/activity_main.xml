@@ -8,7 +8,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
@@ -25,6 +27,9 @@
             android:id="@+id/bottomNavLayout"
             android:layout_width="match_parent"
             android:layout_height="83dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:fitsSystemWindows="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -34,6 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
+                android:fitsSystemWindows="false"
                 app:fabAlignmentMode="center"
                 app:fabAnchorMode="cradle"
                 app:fabCradleMargin="8dp"
@@ -47,6 +53,8 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="16dp"
                     android:background="@android:color/transparent"
+                    android:fitsSystemWindows="false"
+                    android:paddingBottom="0dp"
                     app:itemIconSize="20dp"
                     app:itemIconTint="@color/color_bottom_nav_menu_item"
                     app:itemPaddingBottom="10dp"
@@ -263,7 +271,5 @@
         </RelativeLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <include layout="@layout/bottomsheet_calendar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

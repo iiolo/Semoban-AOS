@@ -7,6 +7,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
 
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
@@ -56,6 +60,13 @@ class MainActivity : AppCompatActivity() {
 
         activityMainBinding.run {
             autoLogin()
+
+            // Material Components가 API 35에서 자동으로 inset 패딩을 추가하는 것을 차단
+            ViewCompat.setOnApplyWindowInsetsListener(bottomNavLayout) { view, insets -> insets }
+            ViewCompat.setOnApplyWindowInsetsListener(bottomNavigationViewMain) { view, insets ->
+                view.setPadding(0, 0, 0, 0)
+                insets
+            }
 
             bottomNavigationViewMain.background = null
             bottomNavigationViewMain.menu.getItem(1).isEnabled = false
